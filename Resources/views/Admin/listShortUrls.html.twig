@@ -1,0 +1,23 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>plop</h1>
+    {% if urlsShortened|length > 0 %}
+      <table>
+        <tr>
+          <th> Tag </th>
+          <th> Url </th>
+          <th> Creation Date </th>
+        </tr>
+      {% for urlShort in  urlsShortened %}
+        <tr>
+          <td> {{ urlShort.tag }} </td>
+          <td> {{ urlShort.url }} </td>
+          <td> {{ urlShort.createdAt|date("d/m/Y H:i") }} </td>
+        </tr>
+      {% endfor %}
+      </table>
+    {% endif %}
+  </body>
+</html>

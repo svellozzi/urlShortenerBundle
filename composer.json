@@ -1,0 +1,23 @@
+{
+    "name": "Vellozzi/UrlShortenerBundle",
+    "type": "symfony-bundle",
+    "description": "this bundle is a clone of bit.ly functionnality in a Symfony project",
+    "keywords": ["short url"],
+    "homepage": "http://github.com/svellozzi/urlShortenerBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastien Vellozzi",
+            "email": "s.vellozzi@gmail.com"
+        }
+    ],
+    "require": {
+        "symfony/framework-bundle": "2.*",
+    },
+    "autoload": {
+        "psr-0": {
+            "Vellozzi\\UrlShortenerBundle": ""
+        }
+    },
+    "target-dir": "Vellozzi/UrlShortenerBundle"
+}

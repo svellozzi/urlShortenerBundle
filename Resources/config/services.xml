@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+   <parameters>
+        <parameter key="vellozzi_urlshortener.models.urlshortener.class">Vellozzi\UrlShortenerBundle\Models\UrlShortener</parameter>
+    </parameters>
+
+    <services>
+        <service id="vellozzi_urlshortener.default" class="%vellozzi_urlshortener.models.urlshortener.class%" >
+            <argument type="service" id="doctrine.orm.entity_manager" />
+        </service>
+    </services>
+  
+    <!--
+    
+    <parameters>
+        <parameter key="rizza_calendar.manager.calendar.class">Rizza\CalendarBundle\Entity\CalendarManager</parameter>
+        <parameter key="rizza_calendar.manager.event.class">Rizza\CalendarBundle\Entity\EventManager</parameter>
+        <parameter key="rizza_calendar.manager.user.class">Rizza\CalendarBundle\Entity\UserManager</parameter>
+        <parameter key="rizza_calendar.manager.attendee.class">Rizza\CalendarBundle\Entity\AttendeeManager</parameter>
+    </parameters>
+
+    <services>
+        <service id="rizza_calendar.manager.calendar.default" class="%rizza_calendar.manager.calendar.class%" public="false">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%rizza_calendar.model.calendar.class%</argument>
+        </service>
+        <service id="rizza_calendar.manager.event.default" class="%rizza_calendar.manager.event.class%" public="false">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%rizza_calendar.model.event.class%</argument>
+        </service>
+        <service id="rizza_calendar.manager.user.default" class="%rizza_calendar.manager.user.class%" public="false">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%rizza_calendar.model.user.class%</argument>
+        </service>
+        <service id="rizza_calendar.manager.attendee.default" class="%rizza_calendar.manager.attendee.class%" public="false">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%rizza_calendar.model.attendee.class%</argument>
+        </service>
+    </services>
+    
+    
+    <parameters>
+        <parameter key="vellozzi_url_shortener.example.class">Vellozzi\UrlShortenerBundle\Example</parameter>
+    </parameters>
+
+    <services>
+        <service id="vellozzi_url_shortener.example" class="%vellozzi_url_shortener.example.class%">
+            <argument type="service" id="service_id" />
+            <argument>plain_value</argument>
+            <argument>%parameter_name%</argument>
+        </service>
+    </services>
+    -->
+</container>

@@ -1,0 +1,16 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>add plop</h1>
+    <form action="{{ path('admin_add_short_url') }}" method="post" {{ form_enctype(form) }}>
+    <div>
+    {{ form_widget(form) }}
+    </div>
+    
+    {{ form_rest(form) }}
+    <input type="submit" id="submit" value="Add" name="submit" />
+  </form>
+
+  </body>
+</html>

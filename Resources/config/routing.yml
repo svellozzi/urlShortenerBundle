@@ -1,0 +1,8 @@
+## YAML Template.
+---
+admin_list_short_urls:
+    pattern:   /admin/listShortUrls/
+    defaults:  { _controller: VellozziUrlShortenerBundle:Admin:list }
+admin_add_short_url:
+    pattern:   /admin/addShortUrl/
+    defaults:  { _controller: VellozziUrlShortenerBundle:Admin:add }
