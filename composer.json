@@ -4,7 +4,7 @@
     "description": "this bundle is a clone of bit.ly functionnality in a Symfony project",
     "keywords": ["short url"],
     "homepage": "http://github.com/svellozzi/urlShortenerBundle",
-    "license": "MIT",
+    "license": "GPL",
     "authors": [
         {
             "name": "Sebastien Vellozzi",
