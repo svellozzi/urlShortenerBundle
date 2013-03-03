@@ -1,5 +1,5 @@
 {
-    "name": "Vellozzi/UrlShortenerBundle",
+    "name": "vellozzi/url-shortener-bundle",
     "type": "symfony-bundle",
     "description": "this bundle is a clone of bit.ly functionnality in a Symfony project",
     "keywords": ["short url"],
