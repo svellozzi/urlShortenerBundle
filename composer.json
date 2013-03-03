@@ -2,9 +2,9 @@
     "name": "vellozzi/url-shortener-bundle",
     "type": "symfony-bundle",
     "description": "this bundle is a clone of bit.ly functionnality in a Symfony project",
-    "keywords": ["short url"],
+    "keywords": ["short url", "Vellozzi"],
     "homepage": "http://github.com/svellozzi/urlShortenerBundle",
-    "license": "GPL",
+    "license": "GPL-1.0",
     "authors": [
         {
             "name": "Sebastien Vellozzi",
