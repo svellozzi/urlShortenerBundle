@@ -6,3 +6,6 @@ admin_list_short_urls:
 admin_add_short_url:
     pattern:   /admin/addShortUrl/
     defaults:  { _controller: VellozziUrlShortenerBundle:Admin:add }
+redirect_short_url:
+    pattern:   /r/{tag}
+    defaults:  { _controller: VellozziUrlShortenerBundle:Front:redirect }

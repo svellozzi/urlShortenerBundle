@@ -22,7 +22,7 @@ class FrontController extends Controller
         } else { 
           $urlShortener->incrNbUsed();
           $urlShortener->save();
-          $this->redirect($urlShortener->getUrl());
+          return $this->redirect($urlShortener->getUrl());
         }
       } else {
         return $this->render("VellozziUrlShortenerBundle:Front:notFound.html.twig");

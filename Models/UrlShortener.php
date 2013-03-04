@@ -77,6 +77,7 @@ class UrlShortener {
       if ($this->_checkTagIsValid($tag)) {
         return $tag;
       } else {
+         $this->doLog('unable to save. Url is empty.');
         return false;
       }
     }
@@ -97,11 +98,14 @@ class UrlShortener {
     {
       if (empty($this->id)
           && empty($this->shortTag)) {
+        $this->doLog("unable to hydarate. no id or tag setted", 'debug');
         return false;
       }
       if ($this->id > 0) {
+        $this->doLog("hydrate from id ".$this->id, 'debug');
         $entity = $this->getEm()->getRepository('VellozziUrlShortenerBundle:UrlToTag')->find($this->getId());
       } else {
+        $this->doLog("hydrate from tag ".$this->getShortTag(), 'debug');
         $entity = $this->getEm()->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findOneBy(array('tag' => $this->getShortTag()));
       }
       if ($entity instanceof UrlToTag) {
@@ -157,6 +161,7 @@ class UrlShortener {
     public function save()
     {
       if (empty($this->url)) {
+        $this->doLog('unable to save. Url is empty.', 'err');
         return false;
       }
       if (empty($this->id)) {
@@ -201,6 +206,14 @@ class UrlShortener {
       } 
       $now = new \DateTime();
       return (bool) ($tmp->getTimestamp() < $now->getTimestamp());
+    }
+    
+    protected function doLog($message,$loglevel='debug') {
+      $allowedLogLevels = array('emerg','alert','crit','err','warn','notice','info','debug');
+      if (in_array($loglevel,$allowedLogLevels)
+          && $this->objLog instanceof \Symfony\Component\HttpKernel\Log\LoggerInterface) {
+        $this->objLog->$loglevel($message);
+      }
     }
     public function getEm() {
         return $this->em;
