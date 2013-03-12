@@ -6,8 +6,17 @@ use Vellozzi\UrlShortenerBundle\Entity\UrlToTag;
 
 
 class UrlShortener {
+    /**
+     * @var EntityManager  
+     */
     private $em;
+    /**
+     * @var Vellozzi\UrlShortenerBundle\Entity\UrlToTag   
+     */
     private $urlToTagEntity;
+    /**
+     * @var object logging for traces/debug.The object must implement \Symfony\Component\HttpKernel\Log\LoggerInterface 
+     */
     private $objLog;
     /**
      * @var integer $id
@@ -70,6 +79,11 @@ class UrlShortener {
       $this->setNbUsed(0);
       $this->setUrlToTagEntity(new UrlToTag());
     }
+    /**
+     *  _generateTag uses TagGenerator and check that the tag produced is not already used
+     * @return string if ok else false
+     * @
+     */
     protected function _generateTag()
     {
       $tagGenerator = new TagGenerator();
@@ -91,9 +105,16 @@ class UrlShortener {
         return true;
       }
     }
+     /**
+      * public alias of _generateTag
+      */
     public  function generateTag() {
       return $this->_generateTag();
     }
+    /**
+     * hydrate object = loads  informatiosn from databses. If id setted, hydrate wil be done with itelse using tag.
+     * @return boolean true if ok else false 
+     */
     public function hydrate()
     {
       if (empty($this->id)
@@ -207,7 +228,11 @@ class UrlShortener {
       $now = new \DateTime();
       return (bool) ($tmp->getTimestamp() < $now->getTimestamp());
     }
-    
+    /**
+     * doLog  is for debugging
+     * @param string $message string to log
+     * @param string $loglevel level of the log. It should be one of thi enum :emerg,alert,crit,err,warn,notice,info,debug
+     */
     protected function doLog($message,$loglevel='debug') {
       $allowedLogLevels = array('emerg','alert','crit','err','warn','notice','info','debug');
       if (in_array($loglevel,$allowedLogLevels)
