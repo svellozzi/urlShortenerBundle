@@ -91,7 +91,7 @@ class UrlShortener {
       if ($this->_checkTagIsValid($tag)) {
         return $tag;
       } else {
-         $this->doLog('unable to save. Url is empty.');
+         $this->doLog('tag generated is invalid.');
         return false;
       }
     }
@@ -119,7 +119,7 @@ class UrlShortener {
     {
       if (empty($this->id)
           && empty($this->shortTag)) {
-        $this->doLog("unable to hydarate. no id or tag setted", 'debug');
+        $this->doLog("unable to hydrate. no id or tag setted", 'debug');
         return false;
       }
       if ($this->id > 0) {
@@ -202,8 +202,34 @@ class UrlShortener {
       if ($this->getUrlToTagEntity() instanceof UrlToTag) {
         $this->getEm()->persist($this->getUrlToTagEntity());
         $this->getEm()->flush();
+        $this->setId($this->getUrlToTagEntity()->getId());
       }
       return true;
+    }
+    public function remove() {
+      $id = $this->getId();
+      if (empty($id)){
+        $this->doLog('unable to remove. No id setted', 'error');
+        return false;
+      }
+      $urlToTag = $this->getUrlToTagEntity();
+      if ($urlToTag->getId() != $this->getId()) {
+        $doRemove = $this->hydrate();
+      } else  {
+        $doRemove = true;
+      }
+      if ($doRemove === true) {
+        try {
+         $this->getEm()->remove($this->getUrlToTagEntity());
+         $this->getEm()->flush();
+         return true;
+        } catch (Exception $e) {
+          $this->doLog($e->getMessage(), 'error');
+          return false;
+        }
+      } else {
+        return false;
+      }  
     }
     
     public function isValid() {
@@ -237,7 +263,7 @@ class UrlShortener {
       $allowedLogLevels = array('emerg','alert','crit','err','warn','notice','info','debug');
       if (in_array($loglevel,$allowedLogLevels)
           && $this->objLog instanceof \Symfony\Component\HttpKernel\Log\LoggerInterface) {
-        $this->objLog->$loglevel($message);
+        $this->objLog->$loglevel(__CLASS__.' - '.$message);
       }
     }
     public function getEm() {
