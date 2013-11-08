@@ -1,12 +1,12 @@
 <?php
-namespace Vellozzi\UrlShortenerBundle\Models;
+namespace Vellozzi\UrlShortenerBundle\Model;
 /**
  * TagGenerator generate a tag accordind a fixed  size
  * the tag should be used in a URL
  * @version 0.1
  * @author seb
  */
-class TagGenerator {
+class TagGenerator extends BaseModel {
     /**
      * @var string $allowedCharForTag
      */

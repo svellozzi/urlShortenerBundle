@@ -7,8 +7,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Doctrine\ORM\EntityManager;
 use Vellozzi\UrlShortenerBundle\Entity\UrlToTag as UrlToTagEntity;
-use Vellozzi\UrlShortenerBundle\Models\TagGenerator;
-use Vellozzi\UrlShortenerBundle\Models\UrlShortener;
+use Vellozzi\UrlShortenerBundle\Model\TagGenerator;
+use Vellozzi\UrlShortenerBundle\Model\UrlShortener;
 use Vellozzi\UrlShortenerBundle\Form\Type\UrlShortenerType;
 
 
@@ -17,14 +17,18 @@ class AdminController extends Controller
 
     public function addAction()
     {
-      $urlShortener  = $this->get('vellozzi_urlshortener.default');
-      //$urlShortener = new UrlShortener($this->getDoctrine()->getEntityManager());
+      
+      $urlShortener = new UrlShortener();
       $form = $this->createForm(new UrlShortenerType(), $urlShortener);  
       $tmp = $this->getRequest()->get('form');
       if ($this->getRequest()->isMethod('POST')) {
         $form->bind($this->getRequest());
         if ($form->isValid()) {
-          $urlShortener->save();
+          $manager = $this->get('vellozzi_urlshortener.urlshortener_manager');
+          if ($manager->isValidTag($urlShortener->getShortTag()) === true) {
+            $manager->save($urlShortener);
+          }
+          
         }
       }
       return $this->render(
@@ -35,32 +39,15 @@ class AdminController extends Controller
       );
     }
     public function listAction() {
-      $urlsShortened = $this->getListShortUrls();
+      $em = $this->getDoctrine()->getEntityManager();
+      
+      $urlsShortened = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findAllShortenedUrls();
+      $nb = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findNbShortenedUrls();
+      
       return $this->render(
         "VellozziUrlShortenerBundle:Admin:listShortUrls.html.twig",
         array(
           'urlsShortened' => $urlsShortened,
       ));
-       
-    }
-    
-    public function getListShortUrls() {
-      $em = $this->getDoctrine()->getEntityManager();
-      
-      $qb = $em->createQueryBuilder();
-    
-      $qb->select('urlsShortened')
-         ->from('VellozziUrlShortenerBundle:UrlToTag', 'urlsShortened');
- 
-      $query = $qb->getQuery();
-      $urlsShortened = $query->getResult();
-      if (is_array($urlsShortened) == true
-          && count($urlsShortened) > 0)
-      {
-        return $urlsShortened;
-      } else {
-        return false;
-      }
-      
     }
 }

@@ -12,4 +12,30 @@ use Doctrine\ORM\EntityRepository;
  */
 class UrlToTagRepository extends EntityRepository
 {
+  public function findNbShortenedUrls() {
+    $em = $this->_em;
+    $query = $em->createQuery('SELECT COUNT(u.id) FROM VellozziUrlShortenerBundle:UrlToTag u');
+    $count = $query->getSingleScalarResult();
+    return $count;
+  }  
+  public function findAllShortenedUrls() {
+      $em = $this->_em;
+      
+      $qb = $em->createQueryBuilder();
+    
+      $qb->select('urlsShortened')
+         ->from('VellozziUrlShortenerBundle:UrlToTag', 'urlsShortened');
+ 
+      $query = $qb->getQuery();
+      $urlsShortened = $query->getResult();
+      if (is_array($urlsShortened) == true
+          && count($urlsShortened) > 0)
+      {
+        return $urlsShortened;
+      } else {
+        return false;
+      }
+      
+    }
+   
 }

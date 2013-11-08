@@ -9,12 +9,24 @@
           <th> Tag </th>
           <th> Url </th>
           <th> Creation Date </th>
+          <th>Updatedat</th>
+          <th>Lastusedat</th>
+          <th>Expireat</th>
+          <th>Nbused</th>
+          <th>Maxalloweduse</th>
+          <th>Actions</th>
         </tr>
-      {% for urlShort in  urlsShortened %}
+      {% for urlShortened in  urlsShortened %}
         <tr>
-          <td> {{ urlShort.tag }} </td>
-          <td> {{ urlShort.url }} </td>
-          <td> {{ urlShort.createdAt|date("d/m/Y H:i") }} </td>
+          <td> {{ urlShortened.tag }} </td>
+          <td> {{ urlShortened.url }} </td>
+          <td>{% if urlShortened.createdAt %}{{ urlShortened.createdAt|date('d/m/Y H:i') }}{% endif %}</td>
+          <td>{% if urlShortened.updatedAt %}{{ urlShortened.updatedAt|date('d/m/Y H:i') }}{% endif %}</td>
+          <td>{% if urlShortened.lastUsedAt %}{{ urlShortened.lastUsedAt|date('d/m/Y H:i') }}{% endif %}</td>
+          <td>{% if urlShortened.expireAt %}{{ urlShortened.expireAt|date('d/m/Y H:i') }}{% endif %}</td>
+          <td>{{ urlShortened.nbUsed }}</td>
+          <td>{{ urlShortened.maxAllowedUse }}</td>
+          <td>todo</td>
         </tr>
       {% endfor %}
       </table>
