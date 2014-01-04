@@ -1,11 +1,8 @@
 <?php
 namespace Vellozzi\UrlShortenerBundle\Model;
-use Doctrine\ORM\EntityManager;
 
-use Vellozzi\UrlShortenerBundle\Entity\UrlToTag;
-
-
-class UrlShortener extends BaseModel {
+class UrlShortener extends BaseModel
+{
     /**
      * @var integer $id
      */
@@ -64,106 +61,129 @@ class UrlShortener extends BaseModel {
       $this->setMaxAllowedUse(self::INFINITE_NB_ALLOWED_USE);
       $this->setNbUsed(0);
     }
-  
+
     public function incrNbUsed()
     {
       $nbUsed = (int) $this->getNbUsed();
       $this->setNbUsed(++$nbUsed);
       $this->setLastUsedAt(new \DateTime());
     }
-    
-    public function isValid() {
+
+    public function isValid()
+    {
       if ($this->hasExpired() || $this->hasReachedMaxAllowedUse()) {
         return false;
       }
+
       return true;
     }
-    public function hasReachedMaxAllowedUse() {
+    public function hasReachedMaxAllowedUse()
+    {
       if ($this->getMaxAllowedUse() == self::INFINITE_NB_ALLOWED_USE
           || $this->getNbUsed() < $this->getMaxAllowedUse()) {
         return false;
       }
+
       return true;
     }
-    public function hasExpired() 
+    public function hasExpired()
     {
       $tmp = $this->getExpireAt();
       if (is_null($tmp)) {
         return false;
-      } 
+      }
       $now = new \DateTime();
+
       return (bool) ($tmp->getTimestamp() < $now->getTimestamp());
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
     }
 
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->url;
     }
 
-    public function setUrl($url) {
+    public function setUrl($url)
+    {
         $this->url = $url;
     }
 
-    public function getShortTag() {
+    public function getShortTag()
+    {
         return $this->shortTag;
     }
 
-    public function setShortTag($shortTag) {
+    public function setShortTag($shortTag)
+    {
         $this->shortTag = $shortTag;
     }
 
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
     }
 
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
     }
 
-    public function getExpireAt() {
+    public function getExpireAt()
+    {
         return $this->expireAt;
     }
 
-    public function setExpireAt($expireAt) {
+    public function setExpireAt($expireAt)
+    {
         $this->expireAt = $expireAt;
     }
 
-    public function getMaxAllowedUse() {
+    public function getMaxAllowedUse()
+    {
         return $this->maxAllowedUse;
     }
 
-    public function setMaxAllowedUse($maxAllowedUse) {
+    public function setMaxAllowedUse($maxAllowedUse)
+    {
         $this->maxAllowedUse = $maxAllowedUse;
     }
 
-    public function getNbUsed() {
+    public function getNbUsed()
+    {
         return $this->nbUsed;
     }
 
-    public function setNbUsed($nbUsed) {
+    public function setNbUsed($nbUsed)
+    {
         $this->nbUsed = $nbUsed;
     }
 
-    public function getLastUsedAt() {
+    public function getLastUsedAt()
+    {
       return $this->lastUsedAt;
     }
 
-    public function setLastUsedAt($lastUsedAt) {
+    public function setLastUsedAt($lastUsedAt)
+    {
       $this->lastUsedAt = $lastUsedAt;
     }
 }

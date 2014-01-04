@@ -3,9 +3,12 @@
 admin_list_short_urls:
     pattern:   /admin/listShortUrls/
     defaults:  { _controller: VellozziUrlShortenerBundle:Admin:list }
-admin_add_short_url:
-    pattern:   /admin/addShortUrl/
-    defaults:  { _controller: VellozziUrlShortenerBundle:Admin:add }
+admin_ws_add_short_url:
+    pattern:   /admin/ws/add/
+    defaults:  { _controller: VellozziUrlShortenerBundle:AdminWebService:add }
+admin_ws_delete_short_url:
+    pattern:   /admin/ws/delete/
+    defaults:  { _controller: VellozziUrlShortenerBundle:AdminWebService:delete }    
 redirect_short_url:
     pattern:   /r/{tag}
     defaults:  { _controller: VellozziUrlShortenerBundle:Front:redirect }

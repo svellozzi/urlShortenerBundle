@@ -6,7 +6,8 @@ namespace Vellozzi\UrlShortenerBundle\Model;
  * @version 0.1
  * @author seb
  */
-class TagGenerator extends BaseModel {
+class TagGenerator extends BaseModel
+{
     /**
      * @var string $allowedCharForTag
      */
@@ -22,18 +23,18 @@ class TagGenerator extends BaseModel {
     /*
      * generate a random tag according to size setted (default: 4)
      */
-    function generate()
+    public function generate()
     {
-      $nbAllowedChar = $this->getDictionnarySize();
-      $ret = '';
-      for ($i=1; $i <= $this->getSize(); $i++)
-      {
-        $index = mt_rand(0,($nbAllowedChar-1));
-        $ret .= $this->allowedCharForTag[$index];
-      }
-      return $ret;
+        $nbAllowedChar = $this->getDictionnarySize();
+        $ret = '';
+        for ($i=1; $i <= $this->getSize(); $i++) {
+            $index = mt_rand(0,($nbAllowedChar-1));
+            $ret .= $this->allowedCharForTag[$index];
+        }
+
+        return $ret;
     }
-    
+
     public function getSize()
     {
         return $this->size;
@@ -41,12 +42,11 @@ class TagGenerator extends BaseModel {
 
     public function setSize($size)
     {
-      if (is_numeric($size))
-      {
-        $this->size = $size;
+      if (is_numeric($size)) {
+          $this->size = $size;
       }
     }
-    
+
     public function getDictionnarySize()
     {
         return strlen($this->allowedCharForTag);

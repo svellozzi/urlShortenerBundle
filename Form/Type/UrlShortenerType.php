@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
  *
  * @author seb
  */
-class UrlShortenerType extends AbstractType 
+class UrlShortenerType extends AbstractType
 {
   public function buildForm(FormBuilderInterface $builder, array $options)
   {
@@ -16,10 +16,10 @@ class UrlShortenerType extends AbstractType
       'max_length' => 255,
       'required' => false,
       'label' => 'Site web',
-      'trim' => true, 
+      'trim' => true,
       'read_only' => false,
       'error_bubbling' => false
-    );      
+    );
     $builder->add('url', 'url', $urlOptions);
     $builder->add('shortTag', 'text', array('max_length' =>  4,));
     $builder->add('maxAllowedUse', 'integer');
@@ -31,4 +31,3 @@ class UrlShortenerType extends AbstractType
     return 'urlshortener';
   }
 }
-?>

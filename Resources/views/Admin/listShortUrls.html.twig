@@ -1,35 +1,161 @@
 <html>
   <head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <h1>plop</h1>
+    <h1>backend </h1>
+    <p>
+    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+      Add
+    </button></p>
     {% if urlsShortened|length > 0 %}
-      <table>
+      <table class="table table-hover">
         <tr>
-          <th> Tag </th>
-          <th> Url </th>
-          <th> Creation Date </th>
-          <th>Updatedat</th>
-          <th>Lastusedat</th>
-          <th>Expireat</th>
-          <th>Nbused</th>
-          <th>Maxalloweduse</th>
-          <th>Actions</th>
+          <thead>
+            <th>Tag</th>
+            <th>Url</th>
+            <th>Created At</th>
+            <th>Updated at</th>
+            <th>Last used at</th>
+            <th>Expire at</th>
+            <th>Nbused</th>
+            <th>Max use</th>
+            <th>&nbsp;</th>
+          </thead>
         </tr>
       {% for urlShortened in  urlsShortened %}
-        <tr>
-          <td> {{ urlShortened.tag }} </td>
-          <td> {{ urlShortened.url }} </td>
+        <tr id="item{{ urlShortened.id }}">
+          <td>{{ urlShortened.tag }}</td>
+          <td>{{ urlShortened.url }}</td>
           <td>{% if urlShortened.createdAt %}{{ urlShortened.createdAt|date('d/m/Y H:i') }}{% endif %}</td>
           <td>{% if urlShortened.updatedAt %}{{ urlShortened.updatedAt|date('d/m/Y H:i') }}{% endif %}</td>
           <td>{% if urlShortened.lastUsedAt %}{{ urlShortened.lastUsedAt|date('d/m/Y H:i') }}{% endif %}</td>
           <td>{% if urlShortened.expireAt %}{{ urlShortened.expireAt|date('d/m/Y H:i') }}{% endif %}</td>
           <td>{{ urlShortened.nbUsed }}</td>
-          <td>{{ urlShortened.maxAllowedUse }}</td>
-          <td>todo</td>
+          <td>{% if urlShortened.maxAllowedUse == -1 %}&infin;{% else %}{{ urlShortened.maxAllowedUse }}{% endif %}</td>
+          <td><input type="checkbox" id="itemsSelected[]" value="{{ urlShortened.id }}" /><!-- &nbsp;&nbsp;&nbsp;<button class="btn btn-primary" type="button">Edit</button> --></td>
         </tr>
       {% endfor %}
       </table>
     {% endif %}
+
+    <p class="text-right"> For the selected item(s):  <button class="btn btn-primary"  id="btnDelete" type="button">Delete </button></p>
+    <!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Add an url to shorten</h4>
+      </div>
+      <div class="modal-body">
+        <div id="messages"></div>
+        <div class="row">
+          <div class="col-md-2"><strong>Site Web</strong></div>
+          <div class="col-md-10"><input type="text" id="url" class="form-control"/></div>
+        </div>
+        <div class="row">
+          &nbsp;
+        </div>
+        <div class="row">
+          <div class="col-md-1"><strong>tag</strong></div>
+          <div class="col-md-2"><input type="text" id="tag" size="4" /></div>
+          <div class="col-md-1"></div>
+          <div class="col-md-3"><strong>Max allowed use</strong></div>
+          <div class="col-md-4"><input type="text" id="maxAllowedUse" size="4" /></div>
+        </div>
+        <div class="row">
+          &nbsp;
+        </div>
+        <div class="row">
+          <div class="col-md-2">Expire At</div>
+          <div class="col-md-5"><input type="text" id="expireAt" size="13" /></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" id="btnAdd" class="btn btn-primary">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+  <script>
+    $(function() {
+      $( "#expireAt" ).datepicker();
+      $( "#expireAt" ).change(function() {
+        $( "#expireAt" ).datepicker( "option", "dateFormat", "yy-mm-dd" );
+      });
+    });
+    $('#btnAdd').click(function() {
+      // Maintenant nous pouvons commencer l'envoi des donnees
+      $.ajax({
+        url: '{{urlWsAdd}}',
+        type: 'GET',
+        data: {
+          url:  $('#url').val(),
+          tag:  $('#tag').val(),
+          expireAt:  $('#expireAt').val(),
+          maxAllowedUse:  $('#maxAllowedUse').val(),      
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          // En cas d'erreur, on le signale
+          $('#messages').html('').html('<div class="alert alert-danger">Une erreur est survenue lors de la requête'+errorThrown+' -- '+textStatus+'.</div>');
+        },
+        success: function(data, textStatus, jqXHR) {
+          // Succes. On affiche un message de confirmation
+          var alertType = "alert-success";
+          if (data.status == "ko") {
+            alertType = "alert-danger";
+          }
+          $('#messages').html('').html('<div class="alert '+alertType+'">'+data.message+'</div>');
+        }
+      });
+    });
+    
+    $('#btnDelete').click(function() {
+    var selectedItems =  $( ":checkbox" )
+.map(function() {
+  if (this.checked){
+    return this.value;
+  }
+})
+.get()
+.join();
+
+      // Maintenant nous pouvons commencer l'envoi des donnees
+      $.ajax({
+        url: '{{urlWsDelete}}',
+        type: 'GET',
+        data: {
+          items:  selectedItems,  
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          // En cas d'erreur, on le signale
+          $('#messages').html('').html('<div class="alert alert-danger">Une erreur est survenue lors de la requête'+errorThrown+' -- '+textStatus+'.</div>');
+        },
+        success: function(data, textStatus, jqXHR) {
+          // Succes. On affiche un message de confirmation
+          var alertType = "alert-success";
+          if (data.status == "ko") {
+            alertType = "alert-danger";
+          }
+          $('#messages').html('').html('<div class="alert '+alertType+'">'+data.message+'</div>');
+          location.reload();
+        }
+      });
+    });
+  </script>
   </body>
 </html>

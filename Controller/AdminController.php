@@ -15,39 +15,21 @@ use Vellozzi\UrlShortenerBundle\Form\Type\UrlShortenerType;
 class AdminController extends Controller
 {
 
-    public function addAction()
+    public function listAction()
     {
-      
-      $urlShortener = new UrlShortener();
-      $form = $this->createForm(new UrlShortenerType(), $urlShortener);  
-      $tmp = $this->getRequest()->get('form');
-      if ($this->getRequest()->isMethod('POST')) {
-        $form->bind($this->getRequest());
-        if ($form->isValid()) {
-          $manager = $this->get('vellozzi_urlshortener.urlshortener_manager');
-          if ($manager->isValidTag($urlShortener->getShortTag()) === true) {
-            $manager->save($urlShortener);
-          }
-          
-        }
-      }
-      return $this->render(
-        "VellozziUrlShortenerBundle:Admin:addShortUrls.html.twig",
-        array(
-          'form' => $form->createView(),
-        )
-      );
-    }
-    public function listAction() {
-      $em = $this->getDoctrine()->getEntityManager();
-      
-      $urlsShortened = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findAllShortenedUrls();
-      $nb = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findNbShortenedUrls();
-      
-      return $this->render(
-        "VellozziUrlShortenerBundle:Admin:listShortUrls.html.twig",
-        array(
-          'urlsShortened' => $urlsShortened,
-      ));
+        $em = $this->getDoctrine()->getManager();
+        $urlShortener = new UrlShortener();
+        $form = $this->createForm(new UrlShortenerType(), $urlShortener);
+        $urlsShortened = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findAllShortenedUrls();
+        $nb = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findNbShortenedUrls();
+        return $this->render(
+            "VellozziUrlShortenerBundle:Admin:listShortUrls.html.twig",
+            array(
+                'urlsShortened' => $urlsShortened,
+                'urlWsAdd' => $this->generateUrl('admin_ws_add_short_url'),
+                'urlWsDelete' => $this->generateUrl('admin_ws_delete_short_url'),
+                'form' => $form->createView(),
+            )
+        );
     }
 }
