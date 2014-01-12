@@ -37,5 +37,64 @@ class UrlToTagRepository extends EntityRepository
       }
       
     }
-   
+    
+    public function findAllShortenedUrlsHavingReachedMaxUse()
+    {
+      $em = $this->_em;
+
+      $qb = $em->createQueryBuilder();
+    
+      $qb->select('urlsShortened')
+         ->from('VellozziUrlShortenerBundle:UrlToTag', 'urlsShortened')
+         ->where('urlsShortened.maxAllowedUse > 0')
+         ->andWhere('urlsShortened.nbUsed >= urlsShortened.maxAllowedUse');
+    
+      $query = $qb->getQuery();
+      $urlsShortened = $query->getResult();
+      if (is_array($urlsShortened) == true
+          && count($urlsShortened) > 0)
+      {
+        return $this->convertEntitiesToListOfIds($urlsShortened);
+      } else {
+        return false;
+      }
+    }
+     public function findAllShortenedUrlsHavingExpiredLifetime()
+    {
+      $em = $this->_em;
+      $today = new \DateTime("now");
+      $qb = $em->createQueryBuilder();
+    
+
+      $qb->select('urlsShortened')
+         ->from('VellozziUrlShortenerBundle:UrlToTag', 'urlsShortened')
+         //->where('urlsShortened.expireAt > 0')
+         ->where('urlsShortened.expireAt <= :now')
+         ->setParameter('now', $today)
+         ->andWhere('urlsShortened.expireAt is not null')     
+         ->expr()->isNotNull('urlsShortened.expireAt');
+                 
+      $query = $qb->getQuery();
+      $urlsShortened = $query->getResult();
+      if (is_array($urlsShortened) == true
+          && count($urlsShortened) > 0)
+      {
+          
+        return $this->convertEntitiesToListOfIds($urlsShortened);
+      } else {
+        return false;
+      }
+    }
+    
+    protected function convertEntitiesToListOfIds($urlsShorteneds) {
+        $ret = array();
+        if (is_array($urlsShorteneds)) {
+            foreach($urlsShorteneds as $anUrlsShortened) {
+                if ($anUrlsShortened instanceof UrlToTag) {
+                    $ret[] = $anUrlsShortened->getId();
+                }   
+            }
+        }
+        return $ret;
+    }
 }

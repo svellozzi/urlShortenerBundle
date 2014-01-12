@@ -96,14 +96,14 @@ class UrlToTagManager extends BaseModel
             $entity = $this->getRepository()->find($id);
             if ($entity instanceof UrlToTag) {
                 try {
-                  $this->getEm()->remove($entity);
-                  $this->getEm()->flush();
+                    $this->getEm()->remove($entity);
+                    $this->getEm()->flush();
 
-                   return true;
+                    return true;
                 } catch (Exception $e) {
-                  $this->doLog(__FUNCTION__."::".$e->getMessage(), 'error');
+                    $this->doLog(__FUNCTION__."::".$e->getMessage(), 'error');
 
-                  return false;
+                    return false;
                 }
             } else {
                 $this->doLog(__FUNCTION__."::id $id not found", 'error');
