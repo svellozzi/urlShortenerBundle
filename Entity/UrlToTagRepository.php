@@ -85,7 +85,49 @@ class UrlToTagRepository extends EntityRepository
         return false;
       }
     }
+    public function findAllUnusedShortenedUrls(\DateTime $olderThan = null)
+    {
+        $em = $this->_em;
+        $qb = $em->createQueryBuilder();
+        if ($olderThan instanceof \DateTime) {
+            //do nothing
+        } else {
+            $olderThan = new \DateTime("now"); 
+            $olderThan->modify('-1 month');
+        }
+        $qb->select('urlsShortened')
+          ->from('VellozziUrlShortenerBundle:UrlToTag', 'urlsShortened')
+          ->where('urlsShortened.createdAt <= :olderThan')
+          ->setParameter('olderThan', $olderThan)
+          ->andWhere('urlsShortened.lastUsedAt is  null')     
+          ->expr()->isNull('urlsShortened.lastUsedAt');
+
+        $query = $qb->getQuery();
+        $urlsShortened = $query->getResult();
+        if (is_array($urlsShortened) == true
+           && count($urlsShortened) > 0)
+        {
+
+         return $this->convertEntitiesToListOfIds($urlsShortened);
+        } else {
+         return false;
+        }
+    }
     
+    public function massiveDelete($ids)
+    {
+        if (is_array($ids)) {
+            $em = $this->_em;
+            $dql= "DELETE VellozziUrlShortenerBundle:UrlToTag u WHERE u.id in (".implode(',', $ids).")";
+            $query = $em->createQuery($dql);
+            $res = $query->getResult();
+            return $res == count($ids);
+         
+        } else{
+            return false;
+        }
+        
+    }
     protected function convertEntitiesToListOfIds($urlsShorteneds) {
         $ret = array();
         if (is_array($urlsShorteneds)) {

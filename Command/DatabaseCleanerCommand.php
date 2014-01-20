@@ -12,9 +12,8 @@ use Symfony\Component\Console\Helper\ProgressHelper;
  * unvalid antries are :
  *  - rows having reached maxuse
  *  - rows having expired lifetime
+ *  - rows never used
  * @todo 
- *  - better delete
- *  - remove entri never used
  *  - code coments
  * @author Sebastien Vellozzi
  */
@@ -23,10 +22,12 @@ class DatabaseCleanerCommand extends ContainerAwareCommand
     private $listIdToRemove = array();
     private $target  = null;
     private $isDryrun = false;
+    private $olderThan = null;
     private $parcelSize;
     const TARGET_MAXUSE = 'maxuse';
     const TARGET_ALL = 'all';
     const TARGET_LIFETIME = 'lifetime';
+    const TARGET_UNUSED= 'unused';
     
     protected function configure()
     {
@@ -36,6 +37,7 @@ class DatabaseCleanerCommand extends ContainerAwareCommand
             ->addOption('dryrun', null, InputOption::VALUE_NONE, 'dryrun mode')
             ->addOption('target', null, InputOption::VALUE_OPTIONAL, 'maxUse|lifetime|all', 'all')
             ->addOption('parcelSize', null, InputOption::VALUE_OPTIONAL, 'parcel size for deleting', '100')
+            ->addOption('olderThan', null, InputOption::VALUE_OPTIONAL, 'for deleting unused  shortened url defaut 1 montholder or more (format YYYY-MM-DD)', null)
             ->addOption('memoryLimit', null, InputOption::VALUE_OPTIONAL, 'allowed memory in M  for the comman', '32')    
         ;
     }
@@ -79,7 +81,7 @@ class DatabaseCleanerCommand extends ContainerAwareCommand
              $this->isDryrun = true;
          }
          $target = strtolower($input->getOption('target'));
-         $validTargets = array(self::TARGET_MAXUSE, self::TARGET_ALL, self::TARGET_LIFETIME);
+         $validTargets = array(self::TARGET_MAXUSE, self::TARGET_ALL, self::TARGET_LIFETIME, self::TARGET_UNUSED);
          if (in_array($target, $validTargets)) {
              $this->target = $target;
          } else {
@@ -90,6 +92,14 @@ class DatabaseCleanerCommand extends ContainerAwareCommand
              $this->parcelSize = $parcelSize;
          } else {
              throw new \LogicException('parcelSize must be a positive integer');
+         }
+         $olderThan = strtolower($input->getOption('olderThan'));
+         if (!empty($olderThan)) {
+            if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $olderThan )) {
+                $this->olderThan = new \dateTime($olderThan.' 00:00:00');
+            } else {
+                throw new \LogicException('olderTan is invalid (format YYYY-MM-DD)');
+            }
          }
          $memoryLimit = (int) $input->getOption('memoryLimit');
          if ($memoryLimit>0) {
@@ -119,6 +129,18 @@ class DatabaseCleanerCommand extends ContainerAwareCommand
         if (is_array($ret)&& count($ret)) {
             $this->listIdToRemove = array_merge($this->listIdToRemove,$ret);
         }
+        if (self::TARGET_ALL == $this->target
+            || self::TARGET_UNUSED == $this->target) {
+            if ($this->olderThan instanceof \DateTime) {
+                $ret = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findAllUnusedShortenedUrls($this->olderThan);
+            } else {
+                $ret = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findAllUnusedShortenedUrls();
+            }
+        }
+        if (is_array($ret)&& count($ret)) {
+            $this->listIdToRemove = array_merge($this->listIdToRemove,$ret);
+        }
+        
         if (is_array($this->listIdToRemove ) && count($this->listIdToRemove)) {
             $this->listIdToRemove = array_unique($this->listIdToRemove);
         }
@@ -127,15 +149,11 @@ class DatabaseCleanerCommand extends ContainerAwareCommand
     protected function doCleaning($listIdToRemove) {
          $manager = $this->getContainer()->get('vellozzi_urlshortener.urlshortener_manager');
          $ret = true;
-         foreach($listIdToRemove as $id) {
-            $id = (int) $id;
-            if ($id > 0 
-                && false === $this->isDryRun()) {
-                if (false === $manager->removeFromId($id)) {
-                    $ret = false;
-                }
-            }
+         if (false === $this->isDryRun()) {
+            $em = $this->getContainer()->get('doctrine')->getEntityManager();
+            $ret = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->massiveDelete($listIdToRemove);
          }
+
          return $ret;
     }
     protected function isDryRun() {
