@@ -7,7 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * UrlToTag
  *
- * @ORM\Table()
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="urltotag_idx", columns={"tag","expireAt","maxAllowedUse"})
+ * })
  * @ORM\Entity(repositoryClass="Vellozzi\UrlShortenerBundle\Entity\UrlToTagRepository")
  */
 class UrlToTag

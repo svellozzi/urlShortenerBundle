@@ -6,9 +6,9 @@ use Vellozzi\UrlShortenerBundle\Model\UrlShortener;
 use Vellozzi\UrlShortenerBundle\Model\TagGenerator;
 use Vellozzi\UrlShortenerBundle\Model\BaseModel;
 /**
- * Description of UrlToTagManager
+ * UrlToTagManager centralizes basic recurrent methods (create remove, load from database)
  *
- * @author seb
+ * @author Sebastien Vellozzi
  */
 class UrlToTagManager extends BaseModel
 {
@@ -20,6 +20,11 @@ class UrlToTagManager extends BaseModel
     {
     }
 
+    /**
+     * According to the id, it try to retrieve from database the urlShortner
+     * @param int $id
+     * @return Vellozzi\UrlShortenerBundle\Model\UrlShortener
+     */
     public function loadFromId($id)
     {
         if (is_int($id) && $id>0) {
@@ -31,6 +36,11 @@ class UrlToTagManager extends BaseModel
 
         return false;
     }
+    /**
+     * According to the tag, it try to retrieve from database the urlShortner
+     * @param string $tag
+     * @return Vellozzi\UrlShortenerBundle\Model\UrlShortener
+     */
     public function loadFromTag($tag)
     {
         if (strlen($tag)>0) {
@@ -44,7 +54,11 @@ class UrlToTagManager extends BaseModel
 
         return false;
     }
-
+    /**
+     * it save model UrlShortener in database
+     * @param \Vellozzi\UrlShortenerBundle\Model\UrlShortener $u
+     * @return boolean
+     */
     public function save(UrlShortener $u)
     {
         if ($u->getId()>0) {
@@ -74,6 +88,11 @@ class UrlToTagManager extends BaseModel
 
       return false;
     }
+    /**
+     * create an object UrlShortener from the entity UrlToTag
+     * @param \Vellozzi\UrlShortenerBundle\Entity\UrlToTag $entity
+     * @return \Vellozzi\UrlShortenerBundle\Model\UrlShortener
+     */
     public function createUrlShortenerFromEntity(UrlToTag $entity)
     {
         $urlShortener = new UrlShortener();
@@ -89,7 +108,11 @@ class UrlToTagManager extends BaseModel
 
         return $urlShortener;
     }
-
+    /**
+     * removes from  databse 
+     * @param int $id
+     * @return boolean
+     */
     public function removeFromId($id)
     {
         if (is_int($id) && $id>0) {
@@ -114,6 +137,11 @@ class UrlToTagManager extends BaseModel
 
         return false;
     }
+    /**
+     * check if a tag  is valid (=  not exist in database)
+     * @param string $tag
+     * @return boolean
+     */
     public function isValidTag($tag)
     {
         $us = $this->loadFromTag($tag);
