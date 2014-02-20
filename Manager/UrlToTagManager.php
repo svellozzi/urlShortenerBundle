@@ -5,6 +5,8 @@ use Vellozzi\UrlShortenerBundle\Entity\UrlToTag;
 use Vellozzi\UrlShortenerBundle\Model\UrlShortener;
 use Vellozzi\UrlShortenerBundle\Model\TagGenerator;
 use Vellozzi\UrlShortenerBundle\Model\BaseModel;
+use Vellozzi\UrlShortenerBundle\Exception\NotFoundException;
+use Vellozzi\UrlShortenerBundle\Exception\InvalidParameterException;
 /**
  * UrlToTagManager centralizes basic recurrent methods (create remove, load from database)
  *
@@ -24,6 +26,8 @@ class UrlToTagManager extends BaseModel
      * According to the id, it try to retrieve from database the urlShortner
      * @param int $id
      * @return Vellozzi\UrlShortenerBundle\Model\UrlShortener
+     * @trows NotFoundException
+     * @throws InvalidParameterException
      */
     public function loadFromId($id)
     {
@@ -32,14 +36,16 @@ class UrlToTagManager extends BaseModel
             if ($entity instanceof UrlToTag) {
                 return $this->createUrlShortenerFromEntity($entity);
             }
+            throw new NotFoundException("id $id not found");
         }
 
-        return false;
+        throw new InvalidParameterException("parameter id must be a positive integer");
     }
     /**
      * According to the tag, it try to retrieve from database the urlShortner
      * @param string $tag
      * @return Vellozzi\UrlShortenerBundle\Model\UrlShortener
+     * @trows NotFoundException
      */
     public function loadFromTag($tag)
     {
@@ -50,6 +56,7 @@ class UrlToTagManager extends BaseModel
                       return $this->createUrlShortenerFromEntity($entity);
                 }
             }
+            throw new NotFoundException("tag $tag not found");
         }
 
         return false;
@@ -135,7 +142,7 @@ class UrlToTagManager extends BaseModel
             }
         }
 
-        return false;
+        throw new InvalidParameterException("parameter id must be a positive integer");
     }
     /**
      * check if a tag  is valid (=  not exist in database)
@@ -144,14 +151,18 @@ class UrlToTagManager extends BaseModel
      */
     public function isValidTag($tag)
     {
-        $us = $this->loadFromTag($tag);
-        if ($us instanceof UrlShortener) {
-            $this->doLog(__FUNCTION__."::tag $tag is valid");
+        try {
+            $us = $this->loadFromTag($tag);
+            if ($us instanceof UrlShortener) {
+                $this->doLog(__FUNCTION__."::tag $tag is valid");
 
-            return false;
-        } else {
-            $this->doLog(__FUNCTION__."::tag $tag is not valid");
+                return false;
+            } else {
+                $this->doLog(__FUNCTION__."::tag $tag is not valid");
 
+                return true;
+            }   
+        } catch (NotFoundException $ex) {
             return true;
         }
     }

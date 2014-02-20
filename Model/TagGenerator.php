@@ -1,5 +1,6 @@
 <?php
 namespace Vellozzi\UrlShortenerBundle\Model;
+use Vellozzi\UrlShortenerBundle\Exception\InvalidParameterException;
 /**
  * TagGenerator generate a tag accordind a fixed  size
  * the tag should be used in a URL
@@ -42,8 +43,10 @@ class TagGenerator extends BaseModel
 
     public function setSize($size)
     {
-      if (is_numeric($size)) {
+      if (is_int($size) && $size>0) {
           $this->size = $size;
+      } else {
+          throw new InvalidParameterException("parameter size must be a positive integer");
       }
     }
 
