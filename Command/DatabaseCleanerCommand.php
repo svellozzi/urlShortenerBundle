@@ -14,7 +14,7 @@ use Symfony\Component\Console\Helper\ProgressHelper;
  *  - rows having expired lifetime
  *  - rows never used
  * @todo 
- *  - code coments
+ *  - code comments
  * @author Sebastien Vellozzi
  */
 class DatabaseCleanerCommand extends ContainerAwareCommand 

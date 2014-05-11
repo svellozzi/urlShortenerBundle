@@ -21,7 +21,7 @@ class AdminWebServiceController extends Controller
             $url = $this->getRequest()->get('url');
             $tag = $this->getRequest()->get('tag');
             $maxAllowedUse = (int) $this->getRequest()->get('maxAllowedUse');
-            $expireAt =$this->getRequest()->get('expireAt');
+            $expireAt = $this->getRequest()->get('expireAt');
             if (!empty($expireAt)) {
                 $expireAt = $expireAt.' 23:59:59';
                 $expireAt = new \DateTime($expireAt);

@@ -1,0 +1,4 @@
+parameters:
+  vellozzi_url_shortener:
+    admin :
+      item_per_page : 25

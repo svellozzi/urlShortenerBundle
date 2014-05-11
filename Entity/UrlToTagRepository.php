@@ -2,6 +2,7 @@
 namespace Vellozzi\UrlShortenerBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Vellozzi\UrlShortenerBundle\Exception\InvalidParameterException;
 
 
 /**
@@ -15,19 +16,31 @@ class UrlToTagRepository extends EntityRepository
      * It count   the saved shortened urls
      * @return int
      */
-    public function findNbShortenedUrls() {
+    public function findNbShortenedUrls()
+    {
         $em = $this->_em;
         $query = $em->createQuery('SELECT COUNT(u.id) FROM VellozziUrlShortenerBundle:UrlToTag u');
         $count = $query->getSingleScalarResult();
+        
         return $count;
     }  
-    public function findAllShortenedUrls() {
+    public function findAllShortenedUrls($pageNumber=1,$nbItemByPage=100)
+    {
+        if (false == $this->isPositiveInteger($pageNumber)) {
+            throw new InvalidParameterException("pageNumber $pageNumber is not a positive integer");
+        }
+        if (false == $this->isPositiveInteger($nbItemByPage)) {
+            throw new InvalidParameterException("nbItemByPage $nbItemByPage is not a positive integer");
+        }
+        $offset = (int) (($pageNumber - 1) * $nbItemByPage);
         $em = $this->_em;
 
         $qb = $em->createQueryBuilder();
 
         $qb->select('urlsShortened')
-           ->from('VellozziUrlShortenerBundle:UrlToTag', 'urlsShortened');
+           ->from('VellozziUrlShortenerBundle:UrlToTag', 'urlsShortened')
+           ->setFirstResult($offset)
+           ->setMaxResults($nbItemByPage);
 
         $query = $qb->getQuery();
         $urlsShortened = $query->getResult();
@@ -40,6 +53,30 @@ class UrlToTagRepository extends EntityRepository
         }
     }
     
+    public function getQuerySearch($searchtTxt)
+    {
+        $em = $this->_em;
+        $qb = $em->createQueryBuilder();
+        $qb->select('urlsShortened')
+           ->from('VellozziUrlShortenerBundle:UrlToTag', 'urlsShortened');
+        if (strlen(trim($searchtTxt)) > 0) {
+            $tokens = explode(' ', $searchtTxt);
+            foreach($tokens as  $token) {
+                if (strlen(trim($token)) > 0) {
+                    $qb->orWhere($qb->expr()->like('urlsShortened.url', $qb->expr()->literal("%$token%")));
+                    $qb->orWhere($qb->expr()->like('urlsShortened.tag', $qb->expr()->literal("%$token%")));
+                }
+            }
+        }
+
+        $query = $qb->getQuery();
+        
+        return $query;
+    }
+    protected function isPositiveInteger($value)
+    {
+        return is_int($value) && $value>0;
+    }
     public function findAllShortenedUrlsHavingReachedMaxUse()
     {
       $em = $this->_em;
@@ -56,9 +93,9 @@ class UrlToTagRepository extends EntityRepository
       if (is_array($urlsShortened) == true
           && count($urlsShortened) > 0)
       {
-        return $this->convertEntitiesToListOfIds($urlsShortened);
+          return $this->convertEntitiesToListOfIds($urlsShortened);
       } else {
-        return false;
+          return false;
       }
     }
     public function findAllShortenedUrlsHavingExpiredLifetime()
@@ -82,9 +119,9 @@ class UrlToTagRepository extends EntityRepository
           && count($urlsShortened) > 0)
       {
           
-        return $this->convertEntitiesToListOfIds($urlsShortened);
+          return $this->convertEntitiesToListOfIds($urlsShortened);
       } else {
-        return false;
+          return false;
       }
     }
     public function findAllUnusedShortenedUrls(\DateTime $olderThan = null)
@@ -130,7 +167,8 @@ class UrlToTagRepository extends EntityRepository
         }
         
     }
-    protected function convertEntitiesToListOfIds($urlsShorteneds) {
+    protected function convertEntitiesToListOfIds($urlsShorteneds)
+    {
         $ret = array();
         if (is_array($urlsShorteneds)) {
             foreach($urlsShorteneds as $anUrlsShortened) {

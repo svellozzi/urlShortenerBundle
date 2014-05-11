@@ -1,15 +1,13 @@
 <html>
   <head>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <!-- Optional theme -->
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
   </head>
   <body>
     <h1>backend </h1>
@@ -17,7 +15,33 @@
     <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
       Add
     </button></p>
-    {% if urlsShortened|length > 0 %}
+    
+         <div class="row">
+           <div class="col-md-1">&nbsp;</div>
+           <div class="col-md-10">
+           <form id="formSearch" class="form-inline" role="form" action="{{ path('admin_search_short_urls',{'search':'fakesearch'})}}">
+
+              <div class="input-group">
+                <input id="search" type="text" class="form-control">
+                <span class="input-group-btn">
+                  <button id="btnSearch"class="btn btn-default" type="submit">Search</button>
+                </span>
+              </div><!-- /input-group -->
+          </div>
+          </form>
+             
+          <div class="col-md-1">&nbsp;</div>
+  
+         </div>
+             <div class="row">
+           <div class="col-md-1">&nbsp;</div>
+           <div class="col-md-10">
+             total items: <span class="badge">{{ pagination.getTotalItemCount }}</span>
+           </div>
+           <div class="col-md-1">&nbsp;</div>
+    </div>
+    {% if pagination.getTotalItemCount > 0 %}
+    <br/>
       <table class="table table-hover">
         <tr>
           <thead>
@@ -32,7 +56,7 @@
             <th>&nbsp;</th>
           </thead>
         </tr>
-      {% for urlShortened in  urlsShortened %}
+      {% for urlShortened in  pagination %}
         <tr id="item{{ urlShortened.id }}">
           <td>{{ urlShortened.tag }}</td>
           <td>{{ urlShortened.url }}</td>
@@ -46,11 +70,11 @@
         </tr>
       {% endfor %}
       </table>
+       <p class="text-right"> For the selected item(s):  <button class="btn btn-primary"  id="btnDelete" type="button">Delete </button></p>
+    <div class="navigation">
+    {{ knp_pagination_render(pagination) }}
+</div>
     {% endif %}
-
-    <p class="text-right"> For the selected item(s):  <button class="btn btn-primary"  id="btnDelete" type="button">Delete </button></p>
-    <!-- Button trigger modal -->
-
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -156,6 +180,15 @@
         }
       });
     });
+    
+    $('#btnSearch').click(function() {
+      var url  = "{{ path('admin_list_short_urls')}}";
+      if ($('#search').val().length>0) {
+        url =  $('#formSearch').attr("action").replace('fakesearch',$('#search').val());
+      }
+      $('#formSearch').attr("action", url);
+    });
+    
   </script>
   </body>
 </html>

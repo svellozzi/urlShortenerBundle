@@ -1,5 +1,7 @@
 urlShortenerBundle
 ==================
 this bundle is a clone of bit.ly functionnality.
-The bundle is not finished. Main functionnalitty is working.
-The admin/code comments and unit should be done.
+The bundle is working. A small Admin page has beeen created.
+The code comments and unit should be done.
+
+enjoy !
