@@ -17,12 +17,38 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
+        $allowedCharForTag = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-';
+        $infoTag = "size of the wanted tag when the url is shortened";
+        $infoAllowedChar = "string which contains the allowed characters used when the url is shortened";
+        $infoBundle = "Configuration for the VellozziUrlShortenerBundle";
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('vellozzi_url_shortener');
-
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        
+        $rootNode
+            ->addDefaultsIfNotSet()
+            ->info($infoBundle)
+            ->children()
+                ->integerNode('tag_size')
+                    ->defaultValue(5)
+                    ->min(1)
+                    ->max(50)
+                    ->info($infoTag)
+                ->end()
+                ->scalarNode('allowedChar')
+                    ->defaultValue($allowedCharForTag)
+                    ->info($infoAllowedChar)
+                ->end()
+                ->arrayNode('admin')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->integerNode('item_per_page')
+                            ->defaultValue(50)
+                            ->min(1)
+                            ->max(PHP_INT_MAX)
+                        ->end()
+                    ->end() 
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }

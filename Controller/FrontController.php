@@ -10,7 +10,7 @@ class FrontController extends Controller
 {
     public function redirectAction($tag)
     {
-        $manager = $this->get('vellozzi_urlshortener.urlshortener_manager');
+        $manager = $this->get('vellozzi_urlshortener.manager');
         try {
             $urlShortener = $manager->loadFromTag($tag);
             if ($urlShortener instanceof urlShortener) {

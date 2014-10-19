@@ -18,6 +18,7 @@ class UrlToTagManager extends BaseModel
     * @var EntityManager
     */
     protected $em;
+    protected $tagGenerator;
     public function __construct()
     {
     }
@@ -171,11 +172,13 @@ class UrlToTagManager extends BaseModel
      * @return string if ok else false
      * @
      */
-    public function generateTag($size=4, $nbTry=5)
+    public function generateTag($size=null, $nbTry=5)
     {
         $this->doLog(__FUNCTION__."::size = $size, nbTry = $nbTry");
-        $tagGenerator = new TagGenerator();
-        $tagGenerator->setSize($size);
+        $tagGenerator = $this->tagGenerator;
+        if (is_int($size) && $size>0) {
+            $tagGenerator->setSize($size);
+        }
         $cpt = 0;
         $isValid = false;
         $tag = '';
@@ -187,6 +190,7 @@ class UrlToTagManager extends BaseModel
             $cpt++;
         }
         if ($isValid == true) {
+            $this->doLog(__FUNCTION__."::tag generated after $cpt try");
             return $tag;
         }
         $this->doLog(__FUNCTION__."::tag generated is invalid after $nbtry try");
@@ -207,4 +211,13 @@ class UrlToTagManager extends BaseModel
     {
         $this->em = $em;
     }
+    public function getTagGenerator() {
+        return $this->tagGenerator;
+    }
+
+    public function setTagGenerator($tagGenerator) {
+        $this->tagGenerator = $tagGenerator;
+    }
+
+
 }

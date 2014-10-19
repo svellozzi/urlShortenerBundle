@@ -12,7 +12,7 @@ class TagGenerator extends BaseModel
     /**
      * @var string $allowedCharForTag
      */
-    private $allowedCharForTag = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-';
+    private $allowedCharForTag = '';
     /**
      * @var int $size
      */
@@ -54,4 +54,16 @@ class TagGenerator extends BaseModel
     {
         return strlen($this->allowedCharForTag);
     }
+    
+    public function getAllowedCharForTag()
+    {
+        return $this->allowedCharForTag;
+    }
+
+    public function setAllowedCharForTag($allowedCharForTag)
+    {
+        $this->allowedCharForTag = $allowedCharForTag;
+    }
+
+
 }

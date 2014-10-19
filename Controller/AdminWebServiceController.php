@@ -12,6 +12,7 @@ class AdminWebServiceController extends Controller
 
     public function addAction()
     {
+        $this->initTagGenerator();
         $data = array(
             'status' => 'ok',
         );
@@ -32,7 +33,7 @@ class AdminWebServiceController extends Controller
             if ($maxAllowedUse>0) {
                 $urlShortener->setMaxAllowedUse($maxAllowedUse);
             }
-            $manager = $this->get('vellozzi_urlshortener.urlshortener_manager');
+            $manager = $this->get('vellozzi_urlshortener.manager');
             try {
               $manager->save($urlShortener);
               $data = array(
@@ -74,7 +75,7 @@ class AdminWebServiceController extends Controller
             $this->messagesToUser[] = "missing tag";
             $flag = false;
         }
-        $manager = $this->get('vellozzi_urlshortener.urlshortener_manager');
+        $manager = $this->get('vellozzi_urlshortener.manager');
         if ($manager->isValidTag($tag) === false) {
             $this->messagesToUser[] = "tag $tag is  already used";
             $flag = false;
@@ -87,7 +88,7 @@ class AdminWebServiceController extends Controller
         $items = explode(",",$this->getRequest()->get('items'));
 
         if (count($items) > 0) {
-            $manager = $this->get('vellozzi_urlshortener.urlshortener_manager');
+            $manager = $this->get('vellozzi_urlshortener.manager');
             foreach($items as $id) {
                 $id = (int) $id;
                 if ($id > 0) {
@@ -112,4 +113,12 @@ class AdminWebServiceController extends Controller
         return $response;
     }
 
+    protected function initTagGenerator()
+    {
+       $tmp = $this->container->getParameter('vellozzi_url_shortener');
+       $this->get('logger')->debug($tmp['allowedChar']);
+       $this->get('logger')->debug($tmp['tag_size']);
+       $this->get('vellozzi_urlshortener.taggenerator')->setAllowedCharForTag($tmp['allowedChar']);
+       $this->get('vellozzi_urlshortener.taggenerator')->setSize($tmp['tag_size']);
+    }
 }

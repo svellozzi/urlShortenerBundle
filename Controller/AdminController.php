@@ -23,8 +23,8 @@ class AdminController extends Controller
         $nbPages = (int) ceil($nb/$this->getNbItemPerPage());
         $page = $this->retrieveCurrentPage($nbPages);
         $urlsShortened = $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->findAllShortenedUrls($page);
-        
-        $query =  $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->getQuerySearch("plop  http mm12 ");
+  
+        $query =  $em->getRepository('VellozziUrlShortenerBundle:UrlToTag')->getQuerySearch("");
         
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -83,7 +83,8 @@ class AdminController extends Controller
     }
     protected function getNbItemPerPage()
     {
-        $tmp = $this->container->getParameter('vellozzi_url_shortener');
+       $tmp = $this->container->getParameter('vellozzi_url_shortener');
+       $this->get('logger')->debug($tmp['admin']['item_per_page']);
        return $tmp['admin']['item_per_page']; 
     }
 }

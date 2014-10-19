@@ -6,16 +6,21 @@
 
    <parameters>
         <parameter key="vellozzi_urlshortener.manager.urlshortener.class">Vellozzi\UrlShortenerBundle\Manager\UrlToTagManager</parameter>
+        <parameter key="vellozzi_urlshortener.model.taggenerator.class">Vellozzi\UrlShortenerBundle\Model\TagGenerator</parameter>
     </parameters>
     <services>
-        <service id="vellozzi_urlshortener.urlshortener_manager" class="%vellozzi_urlshortener.manager.urlshortener.class%" >
+        <service id="vellozzi_urlshortener.taggenerator" class="%vellozzi_urlshortener.model.taggenerator.class%" >
+        </service>
+        <service id="vellozzi_urlshortener.manager" class="%vellozzi_urlshortener.manager.urlshortener.class%" >
             <call method="setEm">
              <argument type="service" id="doctrine.orm.entity_manager" />
             </call>            
             <call method="setLogger">
              <argument type="service" id="monolog.logger" />
             </call>
+            <call method="setTagGenerator">
+             <argument type="service" id="vellozzi_urlshortener.taggenerator" />
+            </call>
         </service>
-      
     </services>
 </container>
