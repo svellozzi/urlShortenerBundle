@@ -13,10 +13,7 @@ class AdminWebServiceController extends Controller
     public function addAction()
     {
         $this->initTagGenerator();
-        $data = array(
-            'status' => 'ok',
-        );
-        $statusCode = 200;
+
         if ($this->isValidRequestForAdd() === true) {
             $urlShortener = new UrlShortener();
             $url = $this->getRequest()->get('url');
@@ -35,27 +32,25 @@ class AdminWebServiceController extends Controller
             }
             $manager = $this->get('vellozzi_urlshortener.manager');
             try {
-              $manager->save($urlShortener);
-              $data = array(
-                  'status' => 'OK',
-                  'message' => 'url has been save'
-              );
+                $manager->save($urlShortener);
+                $data = array(
+                    'status' => 'OK',
+                    'message' => 'url has been save'
+                );
+                $response = $this->createResponseOk($data);
             } catch (Exception $e) {
-               $statusCode = 500;
                $data = array(
                   'status' => 'ko',
                );
+               $response = $this->createResponseInternalServerError($data);
             }
         } else {
             $data = array(
                 'status' => 'ko',
                 'message' => implode(',',$this->messagesToUser)
             );
-            $statusCode = 400;
+            $response = $this->createResponseBadRequest($data);
         }
-        $response = new JsonResponse();
-        $response->setData($data);
-        $response->setStatusCode($statusCode);
 
         return $response;
      }
@@ -98,20 +93,84 @@ class AdminWebServiceController extends Controller
             $data = array(
                 'status' => 'ok',
              );
-            $statusCode = 200;
+            $response = $this->createResponseOk($data);
         } else {
             $data = array(
                 'status' => 'ko',
                 'message' => 'no id founded'
             );
-            $statusCode = 400;
+            $response = $this->createResponseBadRequest($data); 
         }
-        $response = new JsonResponse();
-        $response->setData($data);
-        $response->setStatusCode($statusCode);
 
         return $response;
     }
+    public function getTagAction()
+    {
+        $this->initTagGenerator();
+        $tag = $this->get('vellozzi_urlshortener.manager')->generateTag();
+        $data = array(
+            'status' => 'ko',
+            'message' => 'unable to generate tag'
+        );
+     
+        if (false === $tag) {
+           $response = $this->createResponseBadRequest($data); 
+        } else {
+           $data = array(
+                'status' => 'ok',
+                'tag' => $tag
+            );
+           $response = $this->createResponseOk($data); 
+        }
+        
+        return $response;
+    }
+    public function isValidTagAction()
+    {
+        $tag = $this->getRequest()->get('tag');
+        $manager = $this->get('vellozzi_urlshortener.manager');
+        if ($manager->isValidTag($tag) === true) {
+            $data = array(
+                'status' => 'ok',
+            );
+            $response = $this->createResponseOk($data);
+        } else {
+            $data = array(
+                'status' => 'ko',
+            ); 
+            $response = $this->createResponseOk($data);
+        }
+
+        return $response;
+    }
+    
+    protected function createResponseOk($data)
+    {
+        $response = new JsonResponse();
+        $response->setData($data);
+        $response->setStatusCode(200);
+        
+        return $response;
+    }
+    
+    protected function createResponseBadRequest($data)
+    {
+        $response = new JsonResponse();
+        $response->setData($data);
+        $response->setStatusCode(400);
+        
+        return $response;
+    }
+    
+    protected function createResponseInternalServerError($data)
+    {
+        $response = new JsonResponse();
+        $response->setData($data);
+        $response->setStatusCode(500);
+        
+        return $response;
+    }
+
 
     protected function initTagGenerator()
     {

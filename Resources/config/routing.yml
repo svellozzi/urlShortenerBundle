@@ -15,7 +15,17 @@ admin_ws_add_short_url:
     defaults:  { _controller: VellozziUrlShortenerBundle:AdminWebService:add }
 admin_ws_delete_short_url:
     pattern:   /admin/ws/delete/
-    defaults:  { _controller: VellozziUrlShortenerBundle:AdminWebService:delete }    
+    defaults:  { _controller: VellozziUrlShortenerBundle:AdminWebService:delete }   
+admin_ws_get_tag:
+    pattern:   /admin/gettag/{size}/{nbTry}
+    defaults:  { _controller: VellozziUrlShortenerBundle:AdminWebService:getTag, size: 0,nbTry: 0 }
+    requirements:
+        size:  \d+
+        nbTry : \d+
+admin_ws_is_valid_tag:
+    pattern:   /admin/isvalidtag/
+    defaults:  { _controller: VellozziUrlShortenerBundle:AdminWebService:isValidTag}
+        
 redirect_short_url:
     pattern:   /r/{tag}
     defaults:  { _controller: VellozziUrlShortenerBundle:Front:redirect }

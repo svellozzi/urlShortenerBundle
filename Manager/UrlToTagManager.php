@@ -170,7 +170,8 @@ class UrlToTagManager extends BaseModel
     /**
      *  generateTag uses TagGenerator and check that the tag produced is not already used
      * @return string if ok else false
-     * @
+     * @param int $size size of the tag
+     * @param int $nbTry number of try  for generation a valid tag. if reached, the method returns false.
      */
     public function generateTag($size=null, $nbTry=5)
     {

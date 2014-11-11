@@ -36,8 +36,6 @@ class AdminController extends Controller
         return $this->render(
             "VellozziUrlShortenerBundle:Admin:listShortUrls.html.twig",
             array(
-                'urlWsAdd' => $this->generateUrl('admin_ws_add_short_url'),
-                'urlWsDelete' => $this->generateUrl('admin_ws_delete_short_url'),
                 'pagination' => $pagination
             )
         );

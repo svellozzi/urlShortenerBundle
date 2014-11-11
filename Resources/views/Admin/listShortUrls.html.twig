@@ -96,8 +96,8 @@
         </div>
         <div class="row">
           <div class="col-md-1"><strong>tag</strong></div>
-          <div class="col-md-2"><input type="text" id="tag" size="4" /></div>
-          <div class="col-md-1"></div>
+          <div class="col-md-3"><input type="text" id="tag" size="4" />&nbsp;<span id="refreshTag" class="glyphicon glyphicon-refresh"></span>&nbsp;<span id="checkTag" class="glyphicon glyphicon-ok"></span></div>
+          {#<div class="col-md-1"></div>#}
           <div class="col-md-3"><strong>Max allowed use</strong></div>
           <div class="col-md-4"><input type="text" id="maxAllowedUse" size="4" /></div>
         </div>
@@ -126,7 +126,7 @@
     $('#btnAdd').click(function() {
       // Maintenant nous pouvons commencer l'envoi des donnees
       $.ajax({
-        url: '{{urlWsAdd}}',
+        url: '{{url('admin_ws_add_short_url')}}',
         type: 'GET',
         data: {
           url:  $('#url').val(),
@@ -161,7 +161,7 @@
 
       // Maintenant nous pouvons commencer l'envoi des donnees
       $.ajax({
-        url: '{{urlWsDelete}}',
+        url: '{{url('admin_ws_delete_short_url')}}',
         type: 'GET',
         data: {
           items:  selectedItems,  
@@ -189,7 +189,49 @@
       }
       $('#formSearch').attr("action", url);
     });
-     
+    
+    $('#refreshTag').click(function() {
+        $.ajax({
+            url: '{{ url('admin_ws_get_tag') }}',
+            type: 'GET',
+            error: function(jqXHR, textStatus, errorThrown) {
+            },
+            success: function(data, textStatus, jqXHR) {
+              if (data.status == "ok") {
+                $('#tag').val(data.tag);
+                if ($('#checkTag').hasClass('text-warning')) {
+                  $('#checkTag').removeClass('text-warning');
+                }
+                $('#checkTag').addClass('text-success');
+              }
+            }
+        });        
+    });
+    
+    $('#checkTag').click(function() {
+        $.ajax({
+            url: '{{ url('admin_ws_is_valid_tag') }}',
+            type: 'GET',
+            data: {
+              tag:  $('#tag').val(),
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+            },
+            success: function(data, textStatus, jqXHR) {
+              if (data.status == "ok") {
+                if ($('#checkTag').hasClass('text-warning')) {
+                  $('#checkTag').removeClass('text-warning');
+                }
+                $('#checkTag').addClass('text-success');
+              } else {
+                if ($('#checkTag').hasClass('text-success')) {
+                  $('#checkTag').removeClass('text-success');
+                }
+                $('#checkTag').addClass('text-warning');
+              }
+            }
+        });        
+    });
   </script>
   </body>
 </html>
