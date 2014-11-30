@@ -22,5 +22,12 @@
              <argument type="service" id="vellozzi_urlshortener.taggenerator" />
             </call>
         </service>
+         <service id="vellozzi_urlshortener.after_redirect_subscriber" class="Vellozzi\UrlShortenerBundle\Subscribers\AfterRedirectSubscriber">
+            <call method="setVellozziUrlshortenerManager">
+              <argument type="service" id="vellozzi_urlshortener.manager" />
+            </call>  
+            <tag name="kernel.event_subscriber" />
+            <tag name="kernel.terminate" />
+        </service>
     </services>
 </container>
